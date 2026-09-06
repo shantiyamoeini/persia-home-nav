@@ -27,9 +27,9 @@ export type Property = {
   city: string;
   district: string;
   address: string;
-  price?: number;
-  deposit?: number;
-  rent?: number;
+  price?: number | undefined;
+  deposit?: number | undefined;
+  rent?: number | undefined;
   ownerName: string;
   ownerPhone: string;
   features: string[];
@@ -90,7 +90,7 @@ export const districts = [
 const fa = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
 
 export function toFa(value: string | number) {
-  return String(value).replace(/\d/g, (d) => fa[Number(d)]);
+  return String(value).replace(/\d/g, (d) => fa[Number(d)] ?? d);
 }
 
 export function formatPrice(value?: number) {
