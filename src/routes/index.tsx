@@ -1,151 +1,73 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Building2, CalendarCheck, CheckCircle2, Clock, Plus, UserPlus, Users } from "lucide-react";
-import { Chip, Screen, SectionTitle, TopBar } from "@/components/app-shell";
-import { ClientCard, PropertyCard } from "@/components/entity-cards";
-import { channelLabels, dealLabels, todayIso, toFa } from "@/lib/data";
-import { useStore } from "@/lib/store";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Building2, CalendarCheck, Users } from "lucide-react";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "میزکار مشاور املاک | دستیار املاک" },
+      { title: "دستیار مشاور املاک | مدیریت ملک، مشتری و پیگیری" },
       {
         name: "description",
-        content: "خلاصه پیگیری‌های امروز، آخرین املاک ثبت‌شده و مشتریان جدید در یک نگاه.",
+        content:
+          "اپ فارسی مشاوران املاک: ثبت املاک با عکس، پرونده مشتریان و پیگیری‌های روزانه در گوشی.",
       },
-      { property: "og:title", content: "میزکار مشاور املاک" },
+      { property: "og:title", content: "دستیار مشاور املاک" },
       {
         property: "og:description",
-        content: "پیگیری‌های امروز، املاک و مشتریان جدید در یک نگاه.",
+        content: "ثبت املاک با عکس، پرونده مشتریان و پیگیری‌های روزانه.",
       },
     ],
   }),
-  component: Dashboard,
+  component: Landing,
 });
 
-function Dashboard() {
-  const { properties, clients, followUps, toggleFollowUp } = useStore();
-  const todays = followUps.filter((f) => f.date === todayIso);
-  const openToday = todays.filter((f) => !f.done);
+function Landing() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) navigate({ to: "/dashboard", replace: true });
+    });
+  }, [navigate]);
 
   return (
-    <Screen>
-      <TopBar title="سلام، جناب مشاور 👋" subtitle="خلاصه کارهای امروز شما" />
-
-      <div className="space-y-6 p-4">
-        <div className="grid grid-cols-3 gap-3">
-          <StatCard icon={<Clock className="size-4" />} value={openToday.length} label="پیگیری امروز" />
-          <StatCard icon={<Building2 className="size-4" />} value={properties.length} label="فایل ملک" />
-          <StatCard icon={<Users className="size-4" />} value={clients.length} label="مشتری" />
-        </div>
-
-        <section>
-          <SectionTitle title="افزودن سریع" />
-          <div className="grid grid-cols-2 gap-3">
-            <Link
-              to="/properties/new"
-              className="flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-sm"
-            >
-              <Plus className="size-4" /> ثبت ملک
-            </Link>
-            <Link
-              to="/clients/new"
-              className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-sm font-bold text-foreground shadow-sm"
-            >
-              <UserPlus className="size-4 text-primary" /> ثبت مشتری
-            </Link>
-          </div>
-        </section>
-
-        <section>
-          <SectionTitle title="پیگیری‌های امروز" actionLabel="همه پیگیری‌ها" to="/followups" />
-          {todays.length === 0 ? (
-            <EmptyState text="برای امروز پیگیری‌ای ثبت نشده است." />
-          ) : (
-            <ul className="space-y-3">
-              {todays.map((f) => (
-                <li
-                  key={f.id}
-                  className="rounded-2xl border border-border bg-card p-4 shadow-sm"
-                >
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-foreground">{f.clientName}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{f.subject}</p>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        <Chip>ساعت {f.time}</Chip>
-                        <Chip tone="primary">{channelLabels[f.channel]}</Chip>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => toggleFollowUp(f.id)}
-                      className={
-                        f.done
-                          ? "grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"
-                          : "grid size-9 shrink-0 place-items-center rounded-full border border-border text-muted-foreground"
-                      }
-                      aria-label={f.done ? "بازگردانی" : "انجام شد"}
-                    >
-                      <CheckCircle2 className="size-4" />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section>
-          <SectionTitle title="آخرین املاک" actionLabel="مشاهده همه" to="/properties" />
-          <div className="space-y-3">
-            {properties.slice(0, 2).map((p) => (
-              <PropertyCard key={p.id} property={p} />
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <SectionTitle title="مشتریان جدید" actionLabel="مشاهده همه" to="/clients" />
-          <div className="space-y-3">
-            {clients.slice(0, 2).map((c) => (
-              <ClientCard key={c.id} client={c} />
-            ))}
-          </div>
-        </section>
-
-        <p className="pb-2 text-center text-[11px] text-muted-foreground">
-          <CalendarCheck className="mb-0.5 ml-1 inline size-3" />
-          {toFa(openToday.length)} پیگیری باز برای امروز · {dealLabels.sale} و {dealLabels.rent}
+    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center gap-8 px-6 py-12">
+      <div>
+        <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold text-primary">
+          نسخه موبایل مشاوران املاک
+        </span>
+        <h1 className="mt-4 text-2xl font-extrabold leading-9 text-foreground">
+          دستیار مشاور املاک
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          فایل‌های ملک با عکس، پرونده کامل مشتریان و پیگیری‌های روزانه — همه در یک اپ ساده و
+          خصوصی. اطلاعات هر مشاور فقط برای خودش قابل دیدن است.
         </p>
       </div>
-    </Screen>
-  );
-}
 
-function StatCard({
-  icon,
-  value,
-  label,
-}: {
-  icon: React.ReactNode;
-  value: number;
-  label: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-3 text-center shadow-sm">
-      <span className="mx-auto grid size-8 place-items-center rounded-full bg-primary/10 text-primary">
-        {icon}
-      </span>
-      <p className="mt-2 text-lg font-extrabold text-foreground">{toFa(value)}</p>
-      <p className="text-[11px] text-muted-foreground">{label}</p>
-    </div>
-  );
-}
+      <ul className="space-y-3">
+        {[
+          { icon: Building2, text: "ثبت و ویرایش فایل ملک همراه چند عکس و ترتیب دلخواه" },
+          { icon: Users, text: "پرونده مشتری با تاریخچه کامل پیگیری‌ها" },
+          { icon: CalendarCheck, text: "پیگیری‌های امروز، آینده و انجام‌شده" },
+        ].map(({ icon: Icon, text }) => (
+          <li
+            key={text}
+            className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-xs text-foreground"
+          >
+            <Icon className="size-5 shrink-0 text-primary" />
+            {text}
+          </li>
+        ))}
+      </ul>
 
-function EmptyState({ text }: { text: string }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-border bg-card p-6 text-center text-xs text-muted-foreground">
-      {text}
-    </div>
+      <Link
+        to="/auth"
+        className="grid h-12 place-items-center rounded-2xl bg-primary text-sm font-extrabold text-primary-foreground"
+      >
+        ورود یا ساخت حساب
+      </Link>
+    </main>
   );
 }

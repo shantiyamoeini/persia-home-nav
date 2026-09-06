@@ -10,102 +10,172 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as FollowupsRouteImport } from './routes/followups'
-import { Route as ClientsIndexRouteImport } from './routes/clients.index'
-import { Route as ClientsNewRouteImport } from './routes/clients.new'
-import { Route as PropertiesIndexRouteImport } from './routes/properties.index'
-import { Route as PropertiesNewRouteImport } from './routes/properties.new'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedFollowupsRouteImport } from './routes/_authenticated/followups'
+import { Route as AuthenticatedClientsIndexRouteImport } from './routes/_authenticated/clients.index'
+import { Route as AuthenticatedClientsNewRouteImport } from './routes/_authenticated/clients.new'
+import { Route as AuthenticatedPropertiesIndexRouteImport } from './routes/_authenticated/properties.index'
+import { Route as AuthenticatedPropertiesNewRouteImport } from './routes/_authenticated/properties.new'
+import { Route as AuthenticatedClientsIdIndexRouteImport } from './routes/_authenticated/clients.$id.index'
+import { Route as AuthenticatedClientsIdEditRouteImport } from './routes/_authenticated/clients.$id.edit'
+import { Route as AuthenticatedPropertiesIdEditRouteImport } from './routes/_authenticated/properties.$id.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FollowupsRoute = FollowupsRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFollowupsRoute = AuthenticatedFollowupsRouteImport.update({
   id: '/followups',
   path: '/followups',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ClientsIndexRoute = ClientsIndexRouteImport.update({
-  id: '/clients/',
-  path: '/clients/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ClientsNewRoute = ClientsNewRouteImport.update({
+const AuthenticatedClientsIndexRoute =
+  AuthenticatedClientsIndexRouteImport.update({
+    id: '/clients/',
+    path: '/clients/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedClientsNewRoute = AuthenticatedClientsNewRouteImport.update({
   id: '/clients/new',
   path: '/clients/new',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const PropertiesIndexRoute = PropertiesIndexRouteImport.update({
-  id: '/properties/',
-  path: '/properties/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PropertiesNewRoute = PropertiesNewRouteImport.update({
-  id: '/properties/new',
-  path: '/properties/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AuthenticatedPropertiesIndexRoute =
+  AuthenticatedPropertiesIndexRouteImport.update({
+    id: '/properties/',
+    path: '/properties/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPropertiesNewRoute =
+  AuthenticatedPropertiesNewRouteImport.update({
+    id: '/properties/new',
+    path: '/properties/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedClientsIdIndexRoute =
+  AuthenticatedClientsIdIndexRouteImport.update({
+    id: '/clients/$id/',
+    path: '/clients/$id/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedClientsIdEditRoute =
+  AuthenticatedClientsIdEditRouteImport.update({
+    id: '/clients/$id/edit',
+    path: '/clients/$id/edit',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPropertiesIdEditRoute =
+  AuthenticatedPropertiesIdEditRouteImport.update({
+    id: '/properties/$id/edit',
+    path: '/properties/$id/edit',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/followups': typeof FollowupsRoute
-  '/clients/new': typeof ClientsNewRoute
-  '/properties/new': typeof PropertiesNewRoute
-  '/clients/': typeof ClientsIndexRoute
-  '/properties/': typeof PropertiesIndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/followups': typeof AuthenticatedFollowupsRoute
+  '/clients/new': typeof AuthenticatedClientsNewRoute
+  '/properties/new': typeof AuthenticatedPropertiesNewRoute
+  '/clients/': typeof AuthenticatedClientsIndexRoute
+  '/properties/': typeof AuthenticatedPropertiesIndexRoute
+  '/clients/$id/edit': typeof AuthenticatedClientsIdEditRoute
+  '/properties/$id/edit': typeof AuthenticatedPropertiesIdEditRoute
+  '/clients/$id/': typeof AuthenticatedClientsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/followups': typeof FollowupsRoute
-  '/clients/new': typeof ClientsNewRoute
-  '/properties/new': typeof PropertiesNewRoute
-  '/clients': typeof ClientsIndexRoute
-  '/properties': typeof PropertiesIndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/followups': typeof AuthenticatedFollowupsRoute
+  '/clients/new': typeof AuthenticatedClientsNewRoute
+  '/properties/new': typeof AuthenticatedPropertiesNewRoute
+  '/clients': typeof AuthenticatedClientsIndexRoute
+  '/properties': typeof AuthenticatedPropertiesIndexRoute
+  '/clients/$id/edit': typeof AuthenticatedClientsIdEditRoute
+  '/properties/$id/edit': typeof AuthenticatedPropertiesIdEditRoute
+  '/clients/$id': typeof AuthenticatedClientsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/followups': typeof FollowupsRoute
-  '/clients/new': typeof ClientsNewRoute
-  '/properties/new': typeof PropertiesNewRoute
-  '/clients/': typeof ClientsIndexRoute
-  '/properties/': typeof PropertiesIndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/followups': typeof AuthenticatedFollowupsRoute
+  '/_authenticated/clients/new': typeof AuthenticatedClientsNewRoute
+  '/_authenticated/properties/new': typeof AuthenticatedPropertiesNewRoute
+  '/_authenticated/clients/': typeof AuthenticatedClientsIndexRoute
+  '/_authenticated/properties/': typeof AuthenticatedPropertiesIndexRoute
+  '/_authenticated/clients/$id/edit': typeof AuthenticatedClientsIdEditRoute
+  '/_authenticated/properties/$id/edit': typeof AuthenticatedPropertiesIdEditRoute
+  '/_authenticated/clients/$id/': typeof AuthenticatedClientsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/dashboard'
     | '/followups'
     | '/clients/new'
     | '/properties/new'
     | '/clients/'
     | '/properties/'
+    | '/clients/$id/edit'
+    | '/properties/$id/edit'
+    | '/clients/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
+    | '/dashboard'
     | '/followups'
     | '/clients/new'
     | '/properties/new'
     | '/clients'
     | '/properties'
+    | '/clients/$id/edit'
+    | '/properties/$id/edit'
+    | '/clients/$id'
   id:
     | '__root__'
     | '/'
-    | '/followups'
-    | '/clients/new'
-    | '/properties/new'
-    | '/clients/'
-    | '/properties/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/followups'
+    | '/_authenticated/clients/new'
+    | '/_authenticated/properties/new'
+    | '/_authenticated/clients/'
+    | '/_authenticated/properties/'
+    | '/_authenticated/clients/$id/edit'
+    | '/_authenticated/properties/$id/edit'
+    | '/_authenticated/clients/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  FollowupsRoute: typeof FollowupsRoute
-  ClientsNewRoute: typeof ClientsNewRoute
-  PropertiesNewRoute: typeof PropertiesNewRoute
-  ClientsIndexRoute: typeof ClientsIndexRoute
-  PropertiesIndexRoute: typeof PropertiesIndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -117,51 +187,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/followups': {
-      id: '/followups'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/followups': {
+      id: '/_authenticated/followups'
       path: '/followups'
       fullPath: '/followups'
-      preLoaderRoute: typeof FollowupsRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedFollowupsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/clients/': {
-      id: '/clients/'
+    '/_authenticated/clients/': {
+      id: '/_authenticated/clients/'
       path: '/clients'
       fullPath: '/clients/'
-      preLoaderRoute: typeof ClientsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedClientsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/clients/new': {
-      id: '/clients/new'
+    '/_authenticated/clients/new': {
+      id: '/_authenticated/clients/new'
       path: '/clients/new'
       fullPath: '/clients/new'
-      preLoaderRoute: typeof ClientsNewRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedClientsNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/properties/': {
-      id: '/properties/'
+    '/_authenticated/properties/': {
+      id: '/_authenticated/properties/'
       path: '/properties'
       fullPath: '/properties/'
-      preLoaderRoute: typeof PropertiesIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedPropertiesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/properties/new': {
-      id: '/properties/new'
+    '/_authenticated/properties/new': {
+      id: '/_authenticated/properties/new'
       path: '/properties/new'
       fullPath: '/properties/new'
-      preLoaderRoute: typeof PropertiesNewRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedPropertiesNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/clients/$id/': {
+      id: '/_authenticated/clients/$id/'
+      path: '/clients/$id'
+      fullPath: '/clients/$id/'
+      preLoaderRoute: typeof AuthenticatedClientsIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/clients/$id/edit': {
+      id: '/_authenticated/clients/$id/edit'
+      path: '/clients/$id/edit'
+      fullPath: '/clients/$id/edit'
+      preLoaderRoute: typeof AuthenticatedClientsIdEditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/properties/$id/edit': {
+      id: '/_authenticated/properties/$id/edit'
+      path: '/properties/$id/edit'
+      fullPath: '/properties/$id/edit'
+      preLoaderRoute: typeof AuthenticatedPropertiesIdEditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFollowupsRoute: typeof AuthenticatedFollowupsRoute
+  AuthenticatedClientsNewRoute: typeof AuthenticatedClientsNewRoute
+  AuthenticatedPropertiesNewRoute: typeof AuthenticatedPropertiesNewRoute
+  AuthenticatedClientsIndexRoute: typeof AuthenticatedClientsIndexRoute
+  AuthenticatedPropertiesIndexRoute: typeof AuthenticatedPropertiesIndexRoute
+  AuthenticatedClientsIdEditRoute: typeof AuthenticatedClientsIdEditRoute
+  AuthenticatedPropertiesIdEditRoute: typeof AuthenticatedPropertiesIdEditRoute
+  AuthenticatedClientsIdIndexRoute: typeof AuthenticatedClientsIdIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFollowupsRoute: AuthenticatedFollowupsRoute,
+  AuthenticatedClientsNewRoute: AuthenticatedClientsNewRoute,
+  AuthenticatedPropertiesNewRoute: AuthenticatedPropertiesNewRoute,
+  AuthenticatedClientsIndexRoute: AuthenticatedClientsIndexRoute,
+  AuthenticatedPropertiesIndexRoute: AuthenticatedPropertiesIndexRoute,
+  AuthenticatedClientsIdEditRoute: AuthenticatedClientsIdEditRoute,
+  AuthenticatedPropertiesIdEditRoute: AuthenticatedPropertiesIdEditRoute,
+  AuthenticatedClientsIdIndexRoute: AuthenticatedClientsIdIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  FollowupsRoute: FollowupsRoute,
-  ClientsNewRoute: ClientsNewRoute,
-  PropertiesNewRoute: PropertiesNewRoute,
-  ClientsIndexRoute: ClientsIndexRoute,
-  PropertiesIndexRoute: PropertiesIndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
