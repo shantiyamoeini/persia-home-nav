@@ -49,7 +49,7 @@ export function TopBar({
 }
 
 const navItems = [
-  { to: "/", label: "خانه", icon: LayoutGrid },
+  { to: "/dashboard", label: "خانه", icon: LayoutGrid },
   { to: "/properties", label: "املاک", icon: Building2 },
   { to: "/clients", label: "مشتریان", icon: Users },
   { to: "/followups", label: "پیگیری", icon: CalendarCheck },
@@ -63,7 +63,6 @@ export function BottomNav() {
           <li key={to}>
             <Link
               to={to}
-              activeOptions={{ exact: to === "/" }}
               className="flex flex-col items-center gap-1 py-3 text-[11px] text-muted-foreground transition-colors data-[status=active]:text-primary"
               activeProps={{ className: "font-bold" }}
             >
