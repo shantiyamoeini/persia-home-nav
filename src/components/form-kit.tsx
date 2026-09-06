@@ -65,15 +65,14 @@ export function SegmentedControl<T extends string>({
   );
 }
 
-export function SubmitBar({ label, pending }: { label: string; pending?: boolean }) {
+export function SubmitBar({ label }: { label: string }) {
   return (
     <div className="sticky bottom-24 pt-2">
       <button
         type="submit"
-        disabled={pending}
-        className="h-12 w-full rounded-2xl bg-primary text-sm font-extrabold text-primary-foreground shadow-lg transition-colors hover:bg-primary/90 disabled:opacity-60"
+        className="h-12 w-full rounded-2xl bg-primary text-sm font-extrabold text-primary-foreground shadow-lg transition-colors hover:bg-primary/90"
       >
-        {pending ? "در حال ذخیره..." : label}
+        {label}
       </button>
     </div>
   );
