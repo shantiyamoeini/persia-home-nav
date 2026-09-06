@@ -14,7 +14,179 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          budget: number
+          created_at: string
+          district: string
+          id: string
+          interest: string
+          min_area: number
+          name: string
+          note: string
+          phone: string
+          rooms: number
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget?: number
+          created_at?: string
+          district?: string
+          id?: string
+          interest?: string
+          min_area?: number
+          name: string
+          note?: string
+          phone?: string
+          rooms?: number
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget?: number
+          created_at?: string
+          district?: string
+          id?: string
+          interest?: string
+          min_area?: number
+          name?: string
+          note?: string
+          phone?: string
+          rooms?: number
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      follow_ups: {
+        Row: {
+          channel: string
+          client_id: string | null
+          client_name: string
+          created_at: string
+          done: boolean
+          due_date: string
+          due_time: string
+          id: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          channel?: string
+          client_id?: string | null
+          client_name?: string
+          created_at?: string
+          done?: boolean
+          due_date?: string
+          due_time?: string
+          id?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          client_id?: string | null
+          client_name?: string
+          created_at?: string
+          done?: boolean
+          due_date?: string
+          due_time?: string
+          id?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follow_ups_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      properties: {
+        Row: {
+          address: string
+          area: number
+          build_year: number
+          city: string
+          created_at: string
+          deal: string
+          deposit: number | null
+          district: string
+          features: string[]
+          floor: string
+          id: string
+          note: string
+          owner_name: string
+          owner_phone: string
+          photos: string[]
+          price: number | null
+          rent: number | null
+          rooms: number
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string
+          area?: number
+          build_year?: number
+          city?: string
+          created_at?: string
+          deal?: string
+          deposit?: number | null
+          district?: string
+          features?: string[]
+          floor?: string
+          id?: string
+          note?: string
+          owner_name?: string
+          owner_phone?: string
+          photos?: string[]
+          price?: number | null
+          rent?: number | null
+          rooms?: number
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          area?: number
+          build_year?: number
+          city?: string
+          created_at?: string
+          deal?: string
+          deposit?: number | null
+          district?: string
+          features?: string[]
+          floor?: string
+          id?: string
+          note?: string
+          owner_name?: string
+          owner_phone?: string
+          photos?: string[]
+          price?: number | null
+          rent?: number | null
+          rooms?: number
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
