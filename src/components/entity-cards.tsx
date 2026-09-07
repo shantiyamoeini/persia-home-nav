@@ -1,4 +1,5 @@
-import { Bed, MapPin, Maximize, Phone, User, Wallet } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Bed, ImageOff, MapPin, Maximize, Phone, User, Wallet } from "lucide-react";
 import { Chip } from "./app-shell";
 import {
   dealLabels,
@@ -12,7 +13,22 @@ import {
 
 export function PropertyCard({ property }: { property: Property }) {
   return (
-    <article className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <Link
+      to="/properties/$propertyId"
+      params={{ propertyId: property.id }}
+      className="block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary/50"
+    >
+      {property.photos?.[0] ? (
+        <img
+          src={property.photos[0]}
+          alt={property.title}
+          className="mb-3 h-36 w-full rounded-xl object-cover"
+        />
+      ) : (
+        <div className="mb-3 grid h-20 w-full place-items-center rounded-xl bg-secondary text-muted-foreground">
+          <ImageOff className="size-5" />
+        </div>
+      )}
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         <h3 className="min-w-0 text-sm font-bold leading-6 text-foreground">
           {property.title}
@@ -68,13 +84,17 @@ export function PropertyCard({ property }: { property: Property }) {
           </span>
         </p>
       </div>
-    </article>
+    </Link>
   );
 }
 
 export function ClientCard({ client }: { client: Client }) {
   return (
-    <article className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <Link
+      to="/clients/$clientId"
+      params={{ clientId: client.id }}
+      className="block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary/50"
+    >
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary">
@@ -106,6 +126,6 @@ export function ClientCard({ client }: { client: Client }) {
       {client.note ? (
         <p className="mt-2 text-[11px] leading-5 text-muted-foreground">{client.note}</p>
       ) : null}
-    </article>
+    </Link>
   );
 }
