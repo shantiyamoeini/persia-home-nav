@@ -14,6 +14,7 @@ import { Route as FollowupsRouteImport } from './routes/followups'
 import { Route as ClientsIndexRouteImport } from './routes/clients.index'
 import { Route as ClientsNewRouteImport } from './routes/clients.new'
 import { Route as PropertiesIndexRouteImport } from './routes/properties.index'
+import { Route as PropertiesPropertyIdRouteImport } from './routes/properties.$propertyId'
 import { Route as PropertiesNewRouteImport } from './routes/properties.new'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const PropertiesIndexRoute = PropertiesIndexRouteImport.update({
   path: '/properties/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PropertiesPropertyIdRoute = PropertiesPropertyIdRouteImport.update({
+  id: '/properties/$propertyId',
+  path: '/properties/$propertyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PropertiesNewRoute = PropertiesNewRouteImport.update({
   id: '/properties/new',
   path: '/properties/new',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/followups': typeof FollowupsRoute
   '/clients/new': typeof ClientsNewRoute
+  '/properties/$propertyId': typeof PropertiesPropertyIdRoute
   '/properties/new': typeof PropertiesNewRoute
   '/clients/': typeof ClientsIndexRoute
   '/properties/': typeof PropertiesIndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/followups': typeof FollowupsRoute
   '/clients/new': typeof ClientsNewRoute
+  '/properties/$propertyId': typeof PropertiesPropertyIdRoute
   '/properties/new': typeof PropertiesNewRoute
   '/clients': typeof ClientsIndexRoute
   '/properties': typeof PropertiesIndexRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/followups': typeof FollowupsRoute
   '/clients/new': typeof ClientsNewRoute
+  '/properties/$propertyId': typeof PropertiesPropertyIdRoute
   '/properties/new': typeof PropertiesNewRoute
   '/clients/': typeof ClientsIndexRoute
   '/properties/': typeof PropertiesIndexRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/followups'
     | '/clients/new'
+    | '/properties/$propertyId'
     | '/properties/new'
     | '/clients/'
     | '/properties/'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/followups'
     | '/clients/new'
+    | '/properties/$propertyId'
     | '/properties/new'
     | '/clients'
     | '/properties'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/followups'
     | '/clients/new'
+    | '/properties/$propertyId'
     | '/properties/new'
     | '/clients/'
     | '/properties/'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FollowupsRoute: typeof FollowupsRoute
   ClientsNewRoute: typeof ClientsNewRoute
+  PropertiesPropertyIdRoute: typeof PropertiesPropertyIdRoute
   PropertiesNewRoute: typeof PropertiesNewRoute
   ClientsIndexRoute: typeof ClientsIndexRoute
   PropertiesIndexRoute: typeof PropertiesIndexRoute
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PropertiesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/properties/$propertyId': {
+      id: '/properties/$propertyId'
+      path: '/properties/$propertyId'
+      fullPath: '/properties/$propertyId'
+      preLoaderRoute: typeof PropertiesPropertyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/properties/new': {
       id: '/properties/new'
       path: '/properties/new'
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FollowupsRoute: FollowupsRoute,
   ClientsNewRoute: ClientsNewRoute,
+  PropertiesPropertyIdRoute: PropertiesPropertyIdRoute,
   PropertiesNewRoute: PropertiesNewRoute,
   ClientsIndexRoute: ClientsIndexRoute,
   PropertiesIndexRoute: PropertiesIndexRoute,
