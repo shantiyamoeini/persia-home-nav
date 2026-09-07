@@ -33,6 +33,7 @@ export type Property = {
   ownerName: string;
   ownerPhone: string;
   features: string[];
+  photos: string[];
   note: string;
   createdAt: string;
 };
@@ -53,6 +54,7 @@ export type Client = {
 
 export type FollowUp = {
   id: string;
+  clientId?: string | undefined;
   clientName: string;
   subject: string;
   date: string; // ISO date
@@ -140,6 +142,7 @@ export const initialProperties: Property[] = [
     ownerName: "آقای رستمی",
     ownerPhone: "۰۹۱۲۳۴۵۶۷۸۹",
     features: ["پارکینگ", "انباری", "آسانسور", "بالکن"],
+    photos: [],
     note: "کلید تحویل، آماده بازدید در ساعات اداری.",
     createdAt: iso(-1),
   },
@@ -159,6 +162,7 @@ export const initialProperties: Property[] = [
     ownerName: "خانم کریمی",
     ownerPhone: "۰۹۱۲۷۷۷۱۲۳۴",
     features: ["پارکینگ", "سند تک‌برگ", "بازسازی شده"],
+    photos: [],
     note: "مالک برای معاوضه هم آمادگی دارد.",
     createdAt: iso(-2),
   },
@@ -179,6 +183,7 @@ export const initialProperties: Property[] = [
     ownerName: "آقای صدیقی",
     ownerPhone: "۰۹۳۵۱۱۲۲۳۳۴",
     features: ["آسانسور", "کولر گازی", "پارکینگ"],
+    photos: [],
     note: "تحویل از اول ماه آینده.",
     createdAt: iso(-3),
   },
@@ -199,6 +204,7 @@ export const initialProperties: Property[] = [
     ownerName: "آقای موحد",
     ownerPhone: "۰۹۱۹۸۸۷۷۶۶۵",
     features: ["سند تک‌برگ"],
+    photos: [],
     note: "مناسب کافه و فروشگاه پوشاک.",
     createdAt: iso(-5),
   },
@@ -218,6 +224,7 @@ export const initialProperties: Property[] = [
     ownerName: "شرکت آریا",
     ownerPhone: "۰۲۱۸۸۷۷۶۶۵۵",
     features: ["آسانسور", "پارکینگ", "انباری"],
+    photos: [],
     note: "دارای پروانه اداری.",
     createdAt: iso(-6),
   },

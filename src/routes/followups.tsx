@@ -51,8 +51,11 @@ function FollowUpsPage() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    const clientId = String(fd.get("clientId") || "");
+    const client = clients.find((c) => c.id === clientId);
     addFollowUp({
-      clientName: String(fd.get("clientName")),
+      clientId: client?.id,
+      clientName: client?.name ?? "مشتری",
       subject: String(fd.get("subject") || "پیگیری"),
       date: String(fd.get("date") || todayIso),
       time: String(fd.get("time") || "۱۰:۰۰"),
@@ -84,9 +87,9 @@ function FollowUpsPage() {
             className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
           >
             <Field label="مشتری">
-              <SelectInput name="clientName" defaultValue={clients[0]?.name}>
+              <SelectInput name="clientId" defaultValue={clients[0]?.id}>
                 {clients.map((c) => (
-                  <option key={c.id} value={c.name}>
+                  <option key={c.id} value={c.id}>
                     {c.name}
                   </option>
                 ))}

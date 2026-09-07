@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Building2, CalendarCheck, LayoutGrid, Users } from "lucide-react";
+import { ArrowRight, Building2, CalendarCheck, LayoutGrid, Settings, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -53,12 +53,13 @@ const navItems = [
   { to: "/properties", label: "املاک", icon: Building2 },
   { to: "/clients", label: "مشتریان", icon: Users },
   { to: "/followups", label: "پیگیری", icon: CalendarCheck },
+  { to: "/settings", label: "تنظیمات", icon: Settings },
 ] as const;
 
 export function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 backdrop-blur">
-      <ul className="mx-auto grid max-w-md grid-cols-4">
+      <ul className="mx-auto grid max-w-md grid-cols-5">
         {navItems.map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <Link
@@ -84,7 +85,7 @@ export function SectionTitle({
 }: {
   title: string;
   actionLabel?: string;
-  to?: "/properties" | "/clients" | "/followups";
+  to?: "/properties" | "/clients" | "/followups" | "/settings";
 }) {
   return (
     <div className="mb-3 flex items-center justify-between">
