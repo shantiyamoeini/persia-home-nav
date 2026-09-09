@@ -464,7 +464,6 @@ export type Database = {
           floor: string
           id: string
           is_public: boolean
-          note: string
           photos: string[]
           price: number | null
           published_at: string | null
@@ -491,7 +490,6 @@ export type Database = {
           floor?: string
           id?: string
           is_public?: boolean
-          note?: string
           photos?: string[]
           price?: number | null
           published_at?: string | null
@@ -518,7 +516,6 @@ export type Database = {
           floor?: string
           id?: string
           is_public?: boolean
-          note?: string
           photos?: string[]
           price?: number | null
           published_at?: string | null
