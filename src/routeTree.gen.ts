@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FollowupsRouteImport } from './routes/followups'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as ClientsIndexRouteImport } from './routes/clients.index'
 import { Route as ClientsClientIdRouteImport } from './routes/clients.$clientId'
 import { Route as ClientsNewRouteImport } from './routes/clients.new'
@@ -34,6 +35,11 @@ const FollowupsRoute = FollowupsRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientsIndexRoute = ClientsIndexRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/followups': typeof FollowupsRoute
   '/settings': typeof SettingsRoute
+  '/welcome': typeof WelcomeRoute
   '/clients/$clientId': typeof ClientsClientIdRouteWithChildren
   '/clients/new': typeof ClientsNewRoute
   '/properties/$propertyId': typeof PropertiesPropertyIdRouteWithChildren
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/followups': typeof FollowupsRoute
   '/settings': typeof SettingsRoute
+  '/welcome': typeof WelcomeRoute
   '/clients/$clientId': typeof ClientsClientIdRouteWithChildren
   '/clients/new': typeof ClientsNewRoute
   '/properties/$propertyId': typeof PropertiesPropertyIdRouteWithChildren
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/followups': typeof FollowupsRoute
   '/settings': typeof SettingsRoute
+  '/welcome': typeof WelcomeRoute
   '/clients/$clientId': typeof ClientsClientIdRouteWithChildren
   '/clients/new': typeof ClientsNewRoute
   '/properties/$propertyId': typeof PropertiesPropertyIdRouteWithChildren
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/'
     | '/followups'
     | '/settings'
+    | '/welcome'
     | '/clients/$clientId'
     | '/clients/new'
     | '/properties/$propertyId'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/'
     | '/followups'
     | '/settings'
+    | '/welcome'
     | '/clients/$clientId'
     | '/clients/new'
     | '/properties/$propertyId'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/'
     | '/followups'
     | '/settings'
+    | '/welcome'
     | '/clients/$clientId'
     | '/clients/new'
     | '/properties/$propertyId'
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FollowupsRoute: typeof FollowupsRoute
   SettingsRoute: typeof SettingsRoute
+  WelcomeRoute: typeof WelcomeRoute
   ClientsClientIdRoute: typeof ClientsClientIdRouteWithChildren
   ClientsNewRoute: typeof ClientsNewRoute
   PropertiesPropertyIdRoute: typeof PropertiesPropertyIdRouteWithChildren
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/clients/': {
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FollowupsRoute: FollowupsRoute,
   SettingsRoute: SettingsRoute,
+  WelcomeRoute: WelcomeRoute,
   ClientsClientIdRoute: ClientsClientIdRouteWithChildren,
   ClientsNewRoute: ClientsNewRoute,
   PropertiesPropertyIdRoute: PropertiesPropertyIdRouteWithChildren,
