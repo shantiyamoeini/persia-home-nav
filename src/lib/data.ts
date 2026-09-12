@@ -43,6 +43,9 @@ export type Property = {
   features: string[];
   photos: string[];
   note: string;
+  status?: PropertyStatus | undefined;
+  isPublic?: boolean | undefined;
+  archived?: boolean | undefined;
   createdAt: string;
 };
 
