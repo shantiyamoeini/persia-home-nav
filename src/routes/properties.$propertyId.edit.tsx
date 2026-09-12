@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Screen, TopBar } from "@/components/app-shell";
-import { LocalOnlyNote } from "@/components/local-note";
+import { CardSkeleton, StorageNote } from "@/components/data-state";
 import { PropertyForm } from "@/components/property-form";
-import { useStore } from "@/lib/store";
+import { usePropertySource } from "@/lib/use-properties";
 
 export const Route = createFileRoute("/properties/$propertyId/edit")({
   head: () => ({
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/properties/$propertyId/edit")({
       { title: "ویرایش ملک | دستیار املاک" },
       {
         name: "description",
-        content: "ویرایش مشخصات، قیمت، امکانات و عکس‌های فایل ملک ذخیره‌شده روی همین دستگاه.",
+        content: "ویرایش مشخصات، قیمت، امکانات، وضعیت و اطلاعات خصوصی مالک برای فایل ملک.",
       },
       { property: "og:title", content: "ویرایش ملک" },
       { property: "og:description", content: "ویرایش مشخصات و عکس‌های فایل ملک." },
@@ -22,9 +22,20 @@ export const Route = createFileRoute("/properties/$propertyId/edit")({
 
 function EditProperty() {
   const { propertyId } = Route.useParams();
-  const { properties, updateProperty, ready } = useStore();
+  const { properties, updateProperty, loading, cloud, saving } = usePropertySource();
   const navigate = useNavigate();
   const property = properties.find((p) => p.id === propertyId);
+
+  if (loading) {
+    return (
+      <Screen>
+        <TopBar title="ویرایش ملک" back="/properties" />
+        <div className="p-4">
+          <CardSkeleton count={2} />
+        </div>
+      </Screen>
+    );
+  }
 
   if (!property) {
     return (
@@ -32,7 +43,7 @@ function EditProperty() {
         <TopBar title="ویرایش ملک" back="/properties" />
         <div className="p-4">
           <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-xs text-muted-foreground">
-            {ready ? "این فایل روی این دستگاه پیدا نشد." : "در حال بارگذاری..."}
+            این فایل ملک پیدا نشد.
           </p>
         </div>
       </Screen>
@@ -43,15 +54,22 @@ function EditProperty() {
     <Screen>
       <TopBar title="ویرایش ملک" subtitle={property.title} back="/properties" />
       <div className="px-4 pt-4">
-        <LocalOnlyNote />
+        <StorageNote cloud={cloud} />
       </div>
       <PropertyForm
         initial={property}
         submitLabel="ذخیره تغییرات"
+        pending={saving}
         onSubmit={(draft) => {
-          updateProperty(property.id, draft);
-          toast.success("تغییرات ذخیره شد");
-          navigate({ to: "/properties/$propertyId", params: { propertyId: property.id } });
+          void (async () => {
+            try {
+              await updateProperty(property.id, draft);
+              toast.success("تغییرات ذخیره شد");
+              navigate({ to: "/properties/$propertyId", params: { propertyId: property.id } });
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "ذخیره تغییرات انجام نشد.");
+            }
+          })();
         }}
       />
     </Screen>

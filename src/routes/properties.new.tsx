@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Screen, TopBar } from "@/components/app-shell";
-import { LocalOnlyNote } from "@/components/local-note";
+import { StorageNote } from "@/components/data-state";
 import { PropertyForm } from "@/components/property-form";
-import { useStore } from "@/lib/store";
+import { usePropertySource } from "@/lib/use-properties";
 
 export const Route = createFileRoute("/properties/new")({
   head: () => ({
@@ -21,21 +21,28 @@ export const Route = createFileRoute("/properties/new")({
 });
 
 function AddProperty() {
-  const { addProperty } = useStore();
+  const { addProperty, cloud, saving } = usePropertySource();
   const navigate = useNavigate();
 
   return (
     <Screen>
       <TopBar title="ثبت ملک جدید" subtitle="مشخصات فایل را کامل کنید" back="/properties" />
       <div className="px-4 pt-4">
-        <LocalOnlyNote />
+        <StorageNote cloud={cloud} />
       </div>
       <PropertyForm
         submitLabel="ثبت ملک"
+        pending={saving}
         onSubmit={(draft) => {
-          const id = addProperty(draft);
-          toast.success("ملک روی همین دستگاه ذخیره شد");
-          navigate({ to: "/properties/$propertyId", params: { propertyId: id } });
+          void (async () => {
+            try {
+              const id = await addProperty(draft);
+              toast.success(cloud ? "ملک در حساب دفتر شما ثبت شد" : "ملک روی همین دستگاه ذخیره شد");
+              navigate({ to: "/properties/$propertyId", params: { propertyId: id } });
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "ثبت ملک انجام نشد.");
+            }
+          })();
         }}
       />
     </Screen>

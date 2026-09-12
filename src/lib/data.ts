@@ -15,6 +15,14 @@ export const dealLabels: Record<Deal, string> = {
   rent: "اجاره",
 };
 
+export type PropertyStatus = "available" | "reserved" | "done";
+
+export const statusLabels: Record<PropertyStatus, string> = {
+  available: "آماده معامله",
+  reserved: "رزرو شده",
+  done: "معامله شده",
+};
+
 export type Property = {
   id: string;
   title: string;
@@ -35,6 +43,9 @@ export type Property = {
   features: string[];
   photos: string[];
   note: string;
+  status?: PropertyStatus | undefined;
+  isPublic?: boolean | undefined;
+  archived?: boolean | undefined;
   createdAt: string;
 };
 

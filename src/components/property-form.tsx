@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   Field,
   SegmentedControl,
@@ -12,26 +13,36 @@ import {
   districts,
   featureOptions,
   propertyTypeLabels,
+  statusLabels,
   type Deal,
   type Property,
+  type PropertyStatus,
   type PropertyType,
 } from "@/lib/data";
+import { validatePropertyInput, type PropertyInput } from "@/lib/properties.functions";
+import { formatIranPhone } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
-export type PropertyDraft = Omit<Property, "id" | "createdAt">;
+export type PropertyDraft = PropertyInput;
 
 const million = (v: number) => Math.round(v / 1_000_000);
 
 export function PropertyForm({
   initial,
   submitLabel,
+  pending = false,
   onSubmit,
 }: {
   initial?: Property | undefined;
   submitLabel: string;
+  pending?: boolean;
   onSubmit: (draft: PropertyDraft) => void;
 }) {
   const [deal, setDeal] = useState<Deal>(initial?.deal ?? "sale");
+  const [status, setStatus] = useState<PropertyStatus>(initial?.status ?? "available");
+  const [visibility, setVisibility] = useState<"public" | "private">(
+    initial?.isPublic ? "public" : "private",
+  );
   const [features, setFeatures] = useState<string[]>(initial?.features ?? []);
   const [photos, setPhotos] = useState<string[]>(initial?.photos ?? []);
 
@@ -42,26 +53,33 @@ export function PropertyForm({
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const num = (k: string) => Number(fd.get(k) || 0);
-    onSubmit({
-      title: String(fd.get("title") || "ملک بدون عنوان"),
-      deal,
-      type: String(fd.get("type")) as PropertyType,
-      area: num("area"),
-      rooms: num("rooms"),
-      floor: String(fd.get("floor") || "-"),
-      year: num("year") || 1400,
-      city: String(fd.get("city") || "تهران"),
-      district: String(fd.get("district")),
-      address: String(fd.get("address") || ""),
-      price: deal === "sale" ? num("price") * 1_000_000 : undefined,
-      deposit: deal === "rent" ? num("deposit") * 1_000_000 : undefined,
-      rent: deal === "rent" ? num("rent") * 1_000_000 : undefined,
-      ownerName: String(fd.get("ownerName") || ""),
-      ownerPhone: String(fd.get("ownerPhone") || ""),
-      features,
-      photos,
-      note: String(fd.get("note") || ""),
-    });
+    try {
+      const draft = validatePropertyInput({
+        title: String(fd.get("title") || ""),
+        deal,
+        type: String(fd.get("type")) as PropertyType,
+        area: num("area"),
+        rooms: num("rooms"),
+        floor: String(fd.get("floor") || "-"),
+        year: num("year") || 1400,
+        city: String(fd.get("city") || "تهران"),
+        district: String(fd.get("district")),
+        address: String(fd.get("address") || ""),
+        price: deal === "sale" ? num("price") * 1_000_000 : undefined,
+        deposit: deal === "rent" ? num("deposit") * 1_000_000 : undefined,
+        rent: deal === "rent" ? num("rent") * 1_000_000 : undefined,
+        ownerName: String(fd.get("ownerName") || ""),
+        ownerPhone: String(fd.get("ownerPhone") || ""),
+        features,
+        photos,
+        note: String(fd.get("note") || ""),
+        status,
+        isPublic: visibility === "public",
+      });
+      onSubmit(draft);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "اطلاعات فرم کامل نیست.");
+    }
   };
 
   return (
@@ -81,6 +99,7 @@ export function PropertyForm({
         <TextInput
           name="title"
           required
+          minLength={3}
           defaultValue={initial?.title}
           placeholder="مثلاً آپارتمان ۱۰۰ متری سعادت‌آباد"
         />
@@ -117,7 +136,7 @@ export function PropertyForm({
           <TextInput name="floor" defaultValue={initial?.floor} placeholder="۳ از ۶" />
         </Field>
         <Field label="سال ساخت">
-          <TextInput name="year" type="number" defaultValue={initial?.year} placeholder="۱۳۹۹" />
+          <TextInput name="year" type="number" min="0" defaultValue={initial?.year} placeholder="۱۳۹۹" />
         </Field>
         <Field label="شهر">
           <TextInput name="city" defaultValue={initial?.city ?? "تهران"} />
@@ -134,7 +153,7 @@ export function PropertyForm({
         </SelectInput>
       </Field>
 
-      <Field label="آدرس">
+      <Field label="آدرس" hint="آدرس دقیق فقط برای دفتر شما نمایش داده می‌شود">
         <TextArea name="address" defaultValue={initial?.address} placeholder="خیابان، کوچه، پلاک..." />
       </Field>
 
@@ -171,6 +190,31 @@ export function PropertyForm({
         </div>
       )}
 
+      <Field label="وضعیت معامله">
+        <SegmentedControl
+          value={status}
+          onChange={setStatus}
+          options={(Object.keys(statusLabels) as PropertyStatus[]).map((k) => ({
+            value: k,
+            label: statusLabels[k],
+          }))}
+        />
+      </Field>
+
+      <Field
+        label="نمایش آگهی"
+        hint="در حالت عمومی، فقط اطلاعات عمومی ملک دیده می‌شود؛ نام و شماره مالک و یادداشت‌ها همیشه خصوصی می‌ماند."
+      >
+        <SegmentedControl
+          value={visibility}
+          onChange={setVisibility}
+          options={[
+            { value: "private", label: "فقط دفتر من" },
+            { value: "public", label: "عمومی" },
+          ]}
+        />
+      </Field>
+
       <Field label="امکانات">
         <div className="flex flex-wrap gap-2">
           {featureOptions.map((f) => (
@@ -195,21 +239,25 @@ export function PropertyForm({
         <Field label="نام مالک">
           <TextInput name="ownerName" defaultValue={initial?.ownerName} placeholder="آقای رستمی" />
         </Field>
-        <Field label="شماره تماس مالک">
+        <Field label="شماره تماس مالک" hint="شماره موبایل ایران؛ مثل ۰۹۱۲۳۴۵۶۷۸۹">
           <TextInput
             name="ownerPhone"
             inputMode="tel"
-            defaultValue={initial?.ownerPhone}
+            defaultValue={
+              initial?.ownerPhone?.startsWith("98")
+                ? formatIranPhone(initial.ownerPhone)
+                : initial?.ownerPhone
+            }
             placeholder="۰۹۱۲..."
           />
         </Field>
       </div>
 
-      <Field label="توضیحات">
+      <Field label="یادداشت داخلی" hint="این یادداشت هرگز برای دیگران نمایش داده نمی‌شود">
         <TextArea name="note" defaultValue={initial?.note} placeholder="نکات مهم برای بازدید و مذاکره..." />
       </Field>
 
-      <SubmitBar label={submitLabel} />
+      <SubmitBar label={submitLabel} pending={pending} />
     </form>
   );
 }

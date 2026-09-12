@@ -2,9 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { Screen, TopBar } from "@/components/app-shell";
+import { CardSkeleton, ErrorNote, StorageNote } from "@/components/data-state";
 import { PropertyCard } from "@/components/entity-cards";
 import { propertyTypeLabels, toFa, type Deal, type PropertyType } from "@/lib/data";
-import { useStore } from "@/lib/store";
+import { usePropertySource } from "@/lib/use-properties";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/properties/")({
@@ -29,15 +30,17 @@ const dealTabs: { key: "all" | Deal; label: string }[] = [
 ];
 
 function PropertiesPage() {
-  const { properties } = useStore();
+  const { properties, loading, cloud, errorMessage } = usePropertySource();
   const [query, setQuery] = useState("");
   const [deal, setDeal] = useState<"all" | Deal>("all");
   const [type, setType] = useState<"all" | PropertyType>("all");
+  const [showArchived, setShowArchived] = useState(false);
 
   const list = properties.filter((p) => {
+    if (Boolean(p.archived) !== showArchived) return false;
     const matchQuery =
       !query ||
-      [p.title, p.district, p.address, p.ownerName].some((v) => v.includes(query));
+      [p.title, p.district, p.address, p.ownerName].some((v) => (v ?? "").includes(query));
     return matchQuery && (deal === "all" || p.deal === deal) && (type === "all" || p.type === type);
   });
 
@@ -45,7 +48,7 @@ function PropertiesPage() {
     <Screen>
       <TopBar
         title="املاک"
-        subtitle={`${toFa(list.length)} فایل یافت شد`}
+        subtitle={loading ? "در حال بارگذاری..." : `${toFa(list.length)} فایل یافت شد`}
         action={
           <Link
             to="/properties/new"
@@ -57,6 +60,8 @@ function PropertiesPage() {
       />
 
       <div className="space-y-4 p-4">
+        <StorageNote cloud={cloud} />
+
         <div className="relative">
           <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -74,9 +79,7 @@ function PropertiesPage() {
               onClick={() => setDeal(t.key)}
               className={cn(
                 "rounded-lg py-2 text-xs font-bold transition-colors",
-                deal === t.key
-                  ? "bg-card text-primary shadow-sm"
-                  : "text-muted-foreground",
+                deal === t.key ? "bg-card text-primary shadow-sm" : "text-muted-foreground",
               )}
             >
               {t.label}
@@ -101,9 +104,22 @@ function PropertiesPage() {
           ))}
         </div>
 
-        {list.length === 0 ? (
+        {cloud ? (
+          <button
+            onClick={() => setShowArchived((v) => !v)}
+            className="text-[11px] font-bold text-primary"
+          >
+            {showArchived ? "نمایش فایل‌های فعال" : "نمایش بایگانی"}
+          </button>
+        ) : null}
+
+        {errorMessage ? <ErrorNote message={errorMessage} /> : null}
+
+        {loading ? (
+          <CardSkeleton />
+        ) : list.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-xs text-muted-foreground">
-            ملکی با این مشخصات پیدا نشد.
+            {showArchived ? "فایل بایگانی‌شده‌ای ندارید." : "ملکی با این مشخصات پیدا نشد."}
           </p>
         ) : (
           <div className="space-y-3">
