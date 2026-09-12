@@ -4,6 +4,7 @@ import { Chip, Screen, SectionTitle, TopBar } from "@/components/app-shell";
 import { ClientCard, PropertyCard } from "@/components/entity-cards";
 import { channelLabels, dealLabels, todayIso, toFa } from "@/lib/data";
 import { useStore } from "@/lib/store";
+import { usePropertySource } from "@/lib/use-properties";
 
 export const Route = createFileRoute("/")({
   head: () => ({
