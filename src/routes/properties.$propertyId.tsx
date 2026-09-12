@@ -151,7 +151,7 @@ function PropertyDetail() {
             <Chip>{propertyTypeLabels[property.type]}</Chip>
             {property.status ? <Chip>{statusLabels[property.status]}</Chip> : null}
             {cloud ? (
-              <Chip tone={property.isPublic ? "primary" : undefined}>
+              <Chip {...(property.isPublic ? { tone: "primary" as const } : {})}>
                 {property.isPublic ? "آگهی عمومی" : "فقط دفتر من"}
               </Chip>
             ) : null}

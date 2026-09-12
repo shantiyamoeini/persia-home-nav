@@ -260,11 +260,11 @@ export const setAgencyPropertyFlags = createServerFn({ method: "POST" })
       status?: string;
     } = {};
     if (typeof data.isPublic === "boolean") {
-      patch["is_public"] = data.isPublic;
-      patch["published_at"] = data.isPublic ? new Date().toISOString() : null;
+      patch.is_public = data.isPublic;
+      patch.published_at = data.isPublic ? new Date().toISOString() : null;
     }
-    if (typeof data.archived === "boolean") patch["archived"] = data.archived;
-    if (data.status) patch["status"] = data.status;
+    if (typeof data.archived === "boolean") patch.archived = data.archived;
+    if (data.status) patch.status = data.status;
     if (Object.keys(patch).length === 0) return { ok: true };
 
     const { data: updated, error } = await context.supabase
