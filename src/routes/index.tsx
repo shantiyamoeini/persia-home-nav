@@ -25,7 +25,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const { properties, clients, followUps, toggleFollowUp } = useStore();
+  const { clients, followUps, toggleFollowUp } = useStore();
+  const { properties } = usePropertySource();
+  const activeProperties = properties.filter((p) => !p.archived);
   const todays = followUps.filter((f) => f.date === todayIso);
   const openToday = todays.filter((f) => !f.done);
 
