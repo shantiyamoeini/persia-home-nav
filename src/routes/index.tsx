@@ -38,7 +38,7 @@ function Dashboard() {
       <div className="space-y-6 p-4">
         <div className="grid grid-cols-3 gap-3">
           <StatCard icon={<Clock className="size-4" />} value={openToday.length} label="پیگیری امروز" />
-          <StatCard icon={<Building2 className="size-4" />} value={properties.length} label="فایل ملک" />
+          <StatCard icon={<Building2 className="size-4" />} value={activeProperties.length} label="فایل ملک" />
           <StatCard icon={<Users className="size-4" />} value={clients.length} label="مشتری" />
         </div>
 
@@ -101,7 +101,7 @@ function Dashboard() {
         <section>
           <SectionTitle title="آخرین املاک" actionLabel="مشاهده همه" to="/properties" />
           <div className="space-y-3">
-            {properties.slice(0, 2).map((p) => (
+            {activeProperties.slice(0, 2).map((p) => (
               <PropertyCard key={p.id} property={p} />
             ))}
           </div>
