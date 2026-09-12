@@ -253,7 +253,12 @@ export const setAgencyPropertyFlags = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data, context }) => {
     const agencyId = await requireAgencyId(context.supabase as never, context.userId);
-    const patch: Record<string, unknown> = {};
+    const patch: {
+      is_public?: boolean;
+      published_at?: string | null;
+      archived?: boolean;
+      status?: string;
+    } = {};
     if (typeof data.isPublic === "boolean") {
       patch["is_public"] = data.isPublic;
       patch["published_at"] = data.isPublic ? new Date().toISOString() : null;
