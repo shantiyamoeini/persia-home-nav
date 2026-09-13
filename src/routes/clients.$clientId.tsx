@@ -241,15 +241,36 @@ function ClientDetail() {
           </ul>
         )}
 
-        <button
-          onClick={onDelete}
-          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-destructive/40 text-sm font-bold text-destructive"
-        >
-          <Trash2 className="size-4" /> حذف این مشتری
-        </button>
-
-        <LocalOnlyNote />
+        {confirming ? (
+          <div className="space-y-3 rounded-2xl border border-destructive/40 bg-destructive/5 p-4">
+            <p className="text-xs font-bold text-destructive">
+              حذف «{client.name}» قطعی است و بازگشتی ندارد. مطمئن هستید؟
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => void onDelete()}
+                className="h-11 rounded-xl bg-destructive text-xs font-extrabold text-destructive-foreground"
+              >
+                بله، حذف کن
+              </button>
+              <button
+                onClick={() => setConfirming(false)}
+                className="h-11 rounded-xl border border-border text-xs font-bold text-muted-foreground"
+              >
+                انصراف
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirming(true)}
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-destructive/40 text-sm font-bold text-destructive"
+          >
+            <Trash2 className="size-4" /> حذف این مشتری
+          </button>
+        )}
       </div>
+
     </Screen>
   );
 }
