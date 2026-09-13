@@ -103,7 +103,7 @@ export function ClientCard({ client }: { client: Client }) {
           <div className="min-w-0">
             <h3 className="truncate text-sm font-bold text-foreground">{client.name}</h3>
             <p className="text-[11px] text-muted-foreground" dir="ltr">
-              {client.phone}
+              {client.phone ? formatIranPhone(client.phone) : "—"}
             </p>
           </div>
         </div>
@@ -114,18 +114,21 @@ export function ClientCard({ client }: { client: Client }) {
 
       <div className="mt-3 flex flex-wrap gap-2">
         <Chip>{propertyTypeLabels[client.type]}</Chip>
-        <Chip>{client.district}</Chip>
-        <Chip>حداقل {toFa(client.minArea)} متر</Chip>
+        {client.districts || client.district ? (
+          <Chip>{client.districts || client.district}</Chip>
+        ) : null}
+        <Chip>{areaLine(client)}</Chip>
         {client.rooms > 0 ? <Chip>{toFa(client.rooms)} خواب</Chip> : null}
       </div>
 
       <p className="mt-3 flex items-center gap-1.5 border-t border-border pt-3 text-xs font-semibold text-foreground">
         <Wallet className="size-3.5 text-primary" />
-        بودجه: {formatPrice(client.budget)}
+        بودجه: {budgetLine(client)}
       </p>
-      {client.note ? (
-        <p className="mt-2 text-[11px] leading-5 text-muted-foreground">{client.note}</p>
+      {client.requirements ? (
+        <p className="mt-2 text-[11px] leading-5 text-muted-foreground">{client.requirements}</p>
       ) : null}
     </Link>
   );
 }
+
