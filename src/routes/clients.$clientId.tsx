@@ -112,6 +112,7 @@ function ClientDetail() {
       />
 
       <div className="space-y-4 p-4">
+        <StorageNote cloud={cloud} />
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
           <a
             href={`tel:${client.phone}`}
@@ -119,18 +120,26 @@ function ClientDetail() {
             className="flex items-center gap-2 text-sm font-bold text-primary"
           >
             <Phone className="size-4" />
-            {client.phone || "—"}
+            {client.phone ? formatIranPhone(client.phone) : "—"}
           </a>
           <div className="mt-3 flex flex-wrap gap-2">
             <Chip>{propertyTypeLabels[client.type]}</Chip>
-            <Chip>{client.district}</Chip>
-            <Chip>حداقل {toFa(client.minArea)} متر</Chip>
+            {client.districts || client.district ? (
+              <Chip>{client.districts || client.district}</Chip>
+            ) : null}
+            <Chip>{areaLine(client)}</Chip>
             {client.rooms > 0 ? <Chip>{toFa(client.rooms)} خواب</Chip> : null}
           </div>
           <p className="mt-3 flex items-center gap-1.5 border-t border-border pt-3 text-xs font-bold text-foreground">
             <Wallet className="size-3.5 text-primary" />
-            بودجه: {formatPrice(client.budget)}
+            بودجه: {budgetLine(client)}
           </p>
+          {client.requirements ? (
+            <p className="mt-2 text-[11px] leading-5 text-foreground">
+              نیازها: {client.requirements}
+            </p>
+          ) : null}
+
           {client.note ? (
             <p className="mt-2 text-[11px] leading-5 text-muted-foreground">{client.note}</p>
           ) : null}
