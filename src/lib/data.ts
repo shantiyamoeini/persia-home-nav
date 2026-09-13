@@ -55,13 +55,35 @@ export type Client = {
   phone: string;
   interest: Deal;
   type: PropertyType;
+  /** minimum budget (also used as the single budget value in older records) */
   budget: number;
+  budgetMax?: number | undefined;
+  /** primary preferred area, kept for compact cards */
   district: string;
+  /** free-text list of preferred areas */
+  districts?: string | undefined;
   minArea: number;
+  maxArea?: number | undefined;
   rooms: number;
+  requirements?: string | undefined;
   note: string;
   createdAt: string;
 };
+
+export function budgetLine(c: Client) {
+  if (c.budgetMax && c.budgetMax > 0 && c.budgetMax !== c.budget) {
+    return `${formatPrice(c.budget)} تا ${formatPrice(c.budgetMax)}`;
+  }
+  return formatPrice(c.budget);
+}
+
+export function areaLine(c: Client) {
+  if (c.maxArea && c.maxArea > 0 && c.maxArea !== c.minArea) {
+    return `${toFa(c.minArea)} تا ${toFa(c.maxArea)} متر`;
+  }
+  return `حداقل ${toFa(c.minArea)} متر`;
+}
+
 
 export type FollowUp = {
   id: string;

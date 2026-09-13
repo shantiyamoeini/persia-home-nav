@@ -2,8 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Screen, TopBar } from "@/components/app-shell";
 import { ClientForm } from "@/components/client-form";
-import { LocalOnlyNote } from "@/components/local-note";
-import { useStore } from "@/lib/store";
+import { CardSkeleton, ErrorNote, StorageNote } from "@/components/data-state";
+import { useClientSource } from "@/lib/use-clients";
 
 export const Route = createFileRoute("/clients/$clientId/edit")({
   head: () => ({
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/clients/$clientId/edit")({
       { title: "ویرایش مشتری | دستیار املاک" },
       {
         name: "description",
-        content: "ویرایش نیازها، بودجه و مشخصات تماس مشتری ذخیره‌شده روی همین دستگاه.",
+        content: "ویرایش نیازها، بازه بودجه و مشخصات تماس مشتری در پرونده دفتر املاک.",
       },
       { property: "og:title", content: "ویرایش مشتری" },
       { property: "og:description", content: "ویرایش نیازها و بودجه مشتری." },
@@ -22,18 +22,23 @@ export const Route = createFileRoute("/clients/$clientId/edit")({
 
 function EditClient() {
   const { clientId } = Route.useParams();
-  const { clients, updateClient, ready } = useStore();
+  const { clients, updateClient, loading, cloud, saving, errorMessage } = useClientSource();
   const navigate = useNavigate();
   const client = clients.find((c) => c.id === clientId);
 
-  if (!client) {
+  if (loading || !client) {
     return (
       <Screen>
         <TopBar title="ویرایش مشتری" back="/clients" />
-        <div className="p-4">
-          <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-xs text-muted-foreground">
-            {ready ? "این مشتری روی این دستگاه پیدا نشد." : "در حال بارگذاری..."}
-          </p>
+        <div className="space-y-4 p-4">
+          {errorMessage ? <ErrorNote message={errorMessage} /> : null}
+          {loading ? (
+            <CardSkeleton count={2} />
+          ) : (
+            <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-xs text-muted-foreground">
+              این مشتری پیدا نشد.
+            </p>
+          )}
         </div>
       </Screen>
     );
@@ -43,15 +48,22 @@ function EditClient() {
     <Screen>
       <TopBar title="ویرایش مشتری" subtitle={client.name} back="/clients" />
       <div className="px-4 pt-4">
-        <LocalOnlyNote />
+        <StorageNote cloud={cloud} />
       </div>
       <ClientForm
         initial={client}
         submitLabel="ذخیره تغییرات"
+        pending={saving}
         onSubmit={(draft) => {
-          updateClient(client.id, draft);
-          toast.success("تغییرات ذخیره شد");
-          navigate({ to: "/clients/$clientId", params: { clientId: client.id } });
+          void (async () => {
+            try {
+              await updateClient(client.id, draft);
+              toast.success("تغییرات ذخیره شد");
+              navigate({ to: "/clients/$clientId", params: { clientId: client.id } });
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "ذخیره تغییرات انجام نشد.");
+            }
+          })();
         }}
       />
     </Screen>

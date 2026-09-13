@@ -3,19 +3,23 @@ import { CheckCircle2, MapPin, MessageSquare, Pencil, Phone, Plus, Trash2, Walle
 import { useState } from "react";
 import { toast } from "sonner";
 import { Chip, Screen, TopBar } from "@/components/app-shell";
+import { CardSkeleton, StorageNote } from "@/components/data-state";
 import { Field, SelectInput, TextInput } from "@/components/form-kit";
-import { LocalOnlyNote } from "@/components/local-note";
 import {
+  areaLine,
+  budgetLine,
   channelLabels,
   dealLabels,
   formatDate,
-  formatPrice,
   propertyTypeLabels,
   toFa,
   todayIso,
   type FollowUp,
 } from "@/lib/data";
+import { formatIranPhone } from "@/lib/phone";
 import { useStore } from "@/lib/store";
+import { useClientSource } from "@/lib/use-clients";
+
 
 export const Route = createFileRoute("/clients/$clientId")({
   head: () => ({
@@ -36,20 +40,25 @@ const channelIcon = { call: Phone, visit: MapPin, message: MessageSquare };
 
 function ClientDetail() {
   const { clientId } = Route.useParams();
-  const { clients, followUps, ready, removeClient, addFollowUp, toggleFollowUp, removeFollowUp } =
-    useStore();
+  const { followUps, addFollowUp, toggleFollowUp, removeFollowUp } = useStore();
+  const { clients, loading, cloud, removeClient } = useClientSource();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const client = clients.find((c) => c.id === clientId);
 
-  if (!client) {
+  if (loading || !client) {
     return (
       <Screen>
-        <TopBar title="مشتری یافت نشد" back="/clients" />
-        <div className="p-4">
-          <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-xs text-muted-foreground">
-            {ready ? "این مشتری حذف شده یا روی این دستگاه ذخیره نشده است." : "در حال بارگذاری..."}
-          </p>
+        <TopBar title="پرونده مشتری" back="/clients" />
+        <div className="space-y-4 p-4">
+          {loading ? (
+            <CardSkeleton count={2} />
+          ) : (
+            <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-xs text-muted-foreground">
+              این مشتری حذف شده یا در دسترس نیست.
+            </p>
+          )}
         </div>
       </Screen>
     );
@@ -59,12 +68,16 @@ function ClientDetail() {
     .filter((f) => f.clientId === client.id || f.clientName === client.name)
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 
-  const onDelete = () => {
-    if (!window.confirm("این مشتری از این دستگاه حذف شود؟")) return;
-    removeClient(client.id);
-    toast.success("مشتری حذف شد");
-    navigate({ to: "/clients" });
+  const onDelete = async () => {
+    try {
+      await removeClient(client.id);
+      toast.success("مشتری حذف شد");
+      navigate({ to: "/clients" });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "حذف مشتری انجام نشد.");
+    }
   };
+
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -99,6 +112,7 @@ function ClientDetail() {
       />
 
       <div className="space-y-4 p-4">
+        <StorageNote cloud={cloud} />
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
           <a
             href={`tel:${client.phone}`}
@@ -106,18 +120,26 @@ function ClientDetail() {
             className="flex items-center gap-2 text-sm font-bold text-primary"
           >
             <Phone className="size-4" />
-            {client.phone || "—"}
+            {client.phone ? formatIranPhone(client.phone) : "—"}
           </a>
           <div className="mt-3 flex flex-wrap gap-2">
             <Chip>{propertyTypeLabels[client.type]}</Chip>
-            <Chip>{client.district}</Chip>
-            <Chip>حداقل {toFa(client.minArea)} متر</Chip>
+            {client.districts || client.district ? (
+              <Chip>{client.districts || client.district}</Chip>
+            ) : null}
+            <Chip>{areaLine(client)}</Chip>
             {client.rooms > 0 ? <Chip>{toFa(client.rooms)} خواب</Chip> : null}
           </div>
           <p className="mt-3 flex items-center gap-1.5 border-t border-border pt-3 text-xs font-bold text-foreground">
             <Wallet className="size-3.5 text-primary" />
-            بودجه: {formatPrice(client.budget)}
+            بودجه: {budgetLine(client)}
           </p>
+          {client.requirements ? (
+            <p className="mt-2 text-[11px] leading-5 text-foreground">
+              نیازها: {client.requirements}
+            </p>
+          ) : null}
+
           {client.note ? (
             <p className="mt-2 text-[11px] leading-5 text-muted-foreground">{client.note}</p>
           ) : null}
@@ -219,15 +241,36 @@ function ClientDetail() {
           </ul>
         )}
 
-        <button
-          onClick={onDelete}
-          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-destructive/40 text-sm font-bold text-destructive"
-        >
-          <Trash2 className="size-4" /> حذف این مشتری
-        </button>
-
-        <LocalOnlyNote />
+        {confirming ? (
+          <div className="space-y-3 rounded-2xl border border-destructive/40 bg-destructive/5 p-4">
+            <p className="text-xs font-bold text-destructive">
+              حذف «{client.name}» قطعی است و بازگشتی ندارد. مطمئن هستید؟
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => void onDelete()}
+                className="h-11 rounded-xl bg-destructive text-xs font-extrabold text-destructive-foreground"
+              >
+                بله، حذف کن
+              </button>
+              <button
+                onClick={() => setConfirming(false)}
+                className="h-11 rounded-xl border border-border text-xs font-bold text-muted-foreground"
+              >
+                انصراف
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirming(true)}
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-destructive/40 text-sm font-bold text-destructive"
+          >
+            <Trash2 className="size-4" /> حذف این مشتری
+          </button>
+        )}
       </div>
+
     </Screen>
   );
 }

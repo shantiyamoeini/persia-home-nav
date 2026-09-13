@@ -2,9 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Search, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { Screen, TopBar } from "@/components/app-shell";
+import { CardSkeleton, ErrorNote, StorageNote } from "@/components/data-state";
 import { ClientCard } from "@/components/entity-cards";
 import { dealLabels, toFa, type Deal } from "@/lib/data";
-import { useStore } from "@/lib/store";
+import { toLatinDigits } from "@/lib/phone";
+import { useClientSource } from "@/lib/use-clients";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/clients/")({
@@ -23,21 +25,24 @@ export const Route = createFileRoute("/clients/")({
 });
 
 function ClientsPage() {
-  const { clients } = useStore();
+  const { clients, loading, cloud, errorMessage } = useClientSource();
   const [query, setQuery] = useState("");
   const [interest, setInterest] = useState<"all" | Deal>("all");
 
-  const list = clients.filter(
-    (c) =>
-      (!query || [c.name, c.phone, c.district].some((v) => v.includes(query))) &&
-      (interest === "all" || c.interest === interest),
-  );
+  const needle = toLatinDigits(query.trim());
+  const list = clients.filter((c) => {
+    const haystack = [c.name, c.phone, c.district, c.districts ?? "", c.requirements ?? ""]
+      .join(" ")
+      .toLowerCase();
+    const matches = !needle || toLatinDigits(haystack).includes(needle.toLowerCase());
+    return matches && (interest === "all" || c.interest === interest);
+  });
 
   return (
     <Screen>
       <TopBar
         title="مشتریان"
-        subtitle={`${toFa(list.length)} مشتری`}
+        subtitle={loading ? "در حال بارگذاری..." : `${toFa(list.length)} مشتری`}
         action={
           <Link
             to="/clients/new"
@@ -49,12 +54,14 @@ function ClientsPage() {
       />
 
       <div className="space-y-4 p-4">
+        <StorageNote cloud={cloud} />
+
         <div className="relative">
           <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="جست‌وجوی نام، شماره یا محله..."
+            placeholder="جست‌وجوی نام، شماره، محله یا نیاز..."
             className="h-11 w-full rounded-xl border border-border bg-card pr-9 pl-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary"
           />
         </div>
@@ -74,9 +81,15 @@ function ClientsPage() {
           ))}
         </div>
 
-        {list.length === 0 ? (
+        {errorMessage ? <ErrorNote message={errorMessage} /> : null}
+
+        {loading ? (
+          <CardSkeleton />
+        ) : list.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-xs text-muted-foreground">
-            مشتری‌ای با این مشخصات پیدا نشد.
+            {clients.length === 0
+              ? "هنوز مشتری‌ای ثبت نشده است. با دکمه «ثبت مشتری» شروع کنید."
+              : "مشتری‌ای با این مشخصات پیدا نشد."}
           </p>
         ) : (
           <div className="space-y-3">
