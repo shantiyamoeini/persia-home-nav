@@ -2,14 +2,17 @@ import { Link } from "@tanstack/react-router";
 import { Bed, ImageOff, MapPin, Maximize, Phone, User, Wallet } from "lucide-react";
 import { Chip } from "./app-shell";
 import {
+  areaLine,
+  budgetLine,
   dealLabels,
-  formatPrice,
   priceLine,
   propertyTypeLabels,
   toFa,
   type Client,
   type Property,
 } from "@/lib/data";
+import { formatIranPhone } from "@/lib/phone";
+
 
 export function PropertyCard({ property }: { property: Property }) {
   return (
