@@ -36,20 +36,25 @@ const channelIcon = { call: Phone, visit: MapPin, message: MessageSquare };
 
 function ClientDetail() {
   const { clientId } = Route.useParams();
-  const { clients, followUps, ready, removeClient, addFollowUp, toggleFollowUp, removeFollowUp } =
-    useStore();
+  const { followUps, addFollowUp, toggleFollowUp, removeFollowUp } = useStore();
+  const { clients, loading, cloud, removeClient } = useClientSource();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const client = clients.find((c) => c.id === clientId);
 
-  if (!client) {
+  if (loading || !client) {
     return (
       <Screen>
-        <TopBar title="مشتری یافت نشد" back="/clients" />
-        <div className="p-4">
-          <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-xs text-muted-foreground">
-            {ready ? "این مشتری حذف شده یا روی این دستگاه ذخیره نشده است." : "در حال بارگذاری..."}
-          </p>
+        <TopBar title="پرونده مشتری" back="/clients" />
+        <div className="space-y-4 p-4">
+          {loading ? (
+            <CardSkeleton count={2} />
+          ) : (
+            <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-xs text-muted-foreground">
+              این مشتری حذف شده یا در دسترس نیست.
+            </p>
+          )}
         </div>
       </Screen>
     );
@@ -59,12 +64,16 @@ function ClientDetail() {
     .filter((f) => f.clientId === client.id || f.clientName === client.name)
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 
-  const onDelete = () => {
-    if (!window.confirm("این مشتری از این دستگاه حذف شود؟")) return;
-    removeClient(client.id);
-    toast.success("مشتری حذف شد");
-    navigate({ to: "/clients" });
+  const onDelete = async () => {
+    try {
+      await removeClient(client.id);
+      toast.success("مشتری حذف شد");
+      navigate({ to: "/clients" });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "حذف مشتری انجام نشد.");
+    }
   };
+
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
