@@ -3,19 +3,23 @@ import { CheckCircle2, MapPin, MessageSquare, Pencil, Phone, Plus, Trash2, Walle
 import { useState } from "react";
 import { toast } from "sonner";
 import { Chip, Screen, TopBar } from "@/components/app-shell";
+import { CardSkeleton, StorageNote } from "@/components/data-state";
 import { Field, SelectInput, TextInput } from "@/components/form-kit";
-import { LocalOnlyNote } from "@/components/local-note";
 import {
+  areaLine,
+  budgetLine,
   channelLabels,
   dealLabels,
   formatDate,
-  formatPrice,
   propertyTypeLabels,
   toFa,
   todayIso,
   type FollowUp,
 } from "@/lib/data";
+import { formatIranPhone } from "@/lib/phone";
 import { useStore } from "@/lib/store";
+import { useClientSource } from "@/lib/use-clients";
+
 
 export const Route = createFileRoute("/clients/$clientId")({
   head: () => ({
