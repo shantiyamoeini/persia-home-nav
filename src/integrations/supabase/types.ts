@@ -63,14 +63,18 @@ export type Database = {
         Row: {
           agency_id: string | null
           budget: number
+          budget_max: number
           created_at: string
           district: string
+          districts: string
           id: string
           interest: string
+          max_area: number
           min_area: number
           name: string
           note: string
           phone: string
+          requirements: string
           rooms: number
           type: string
           updated_at: string
@@ -79,14 +83,18 @@ export type Database = {
         Insert: {
           agency_id?: string | null
           budget?: number
+          budget_max?: number
           created_at?: string
           district?: string
+          districts?: string
           id?: string
           interest?: string
+          max_area?: number
           min_area?: number
           name: string
           note?: string
           phone?: string
+          requirements?: string
           rooms?: number
           type?: string
           updated_at?: string
@@ -95,14 +103,18 @@ export type Database = {
         Update: {
           agency_id?: string | null
           budget?: number
+          budget_max?: number
           created_at?: string
           district?: string
+          districts?: string
           id?: string
           interest?: string
+          max_area?: number
           min_area?: number
           name?: string
           note?: string
           phone?: string
+          requirements?: string
           rooms?: number
           type?: string
           updated_at?: string
